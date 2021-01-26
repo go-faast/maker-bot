@@ -1,0 +1,12 @@
+node_modules
+.DS_Store
+npm-debug.log*
+Session.vim
+/.gtm/
+settings.*
+start.sh
+stop.sh
+mybin
+bin/settings.temp
+okextest/
+run-rc.sh
