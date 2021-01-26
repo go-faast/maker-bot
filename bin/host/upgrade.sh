@@ -3,7 +3,7 @@ DIR=$(dirname $0)
 
 printf "Pulling latest image...\n"
 
-existingHash=$(docker images --digests | grep maker-bot | grep latest | tr -s ' ' | cut -f3 -d' ')
+existingHash=$(docker images --digests | grep faasthub/maker-bot | grep latest | tr -s ' ' | cut -f3 -d' ')
 incomingHash=$(docker pull faasthub/maker-bot:latest | grep Digest | cut -f2 -d' ')
 
 printf "Existing image hash: $existingHash\n"
