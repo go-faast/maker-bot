@@ -18,7 +18,7 @@ function system_sshd_edit_bool {
 echo "---> Update and install core packages..."
 apt-get update
 apt-get -y upgrade
-apt-get -y install curl git-core haveged fail2ban ntp
+apt-get -y install curl git-core haveged fail2ban
 echo "---> Core packages updated and installed."
 
 if [ -z $(which docker) ]; then
