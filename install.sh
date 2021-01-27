@@ -15,35 +15,46 @@ function system_sshd_edit_bool {
   fi
 }
 
+if ! apt-get --version &>/dev/null; then
+  echo "apt-get required"
+  exit 1
+fi
+
+if ! systemctl --version &>/dev/null; then
+  echo "systemctl required"
+  exit 1
+fi
+
 echo "---> Update and install core packages..."
 apt-get update
 apt-get -y upgrade
 apt-get -y install curl git-core haveged fail2ban
 echo "---> Core packages updated and installed."
 
-if [ -z $(which docker) ]; then
+if ! docker --version 2>/dev/null; then
   echo "---> Installing docker-ce..."
+  DOCKER_REPO='https://download.docker.com/linux/ubuntu'
 
-  if [ "$(cat /etc/apt/sources.list | grep docker)" ]; then
-  echo "Docker apt repository already added"
+  if grep -q "^deb .*$DOCKER_REPO" /etc/apt/sources.list; then
+    echo "Docker apt repository already added"
   else
-  echo "Adding docker apt repository"
-  sudo apt-get -y install \
-      apt-transport-https \
-      ca-certificates \
-      curl \
-      software-properties-common
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    echo "Adding docker apt repository"
+    sudo apt-get -y install \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        software-properties-common
+    curl -fsSL "$DOCKER_REPO/gpg" | sudo apt-key add -
 
-  if [ -z "$(sudo apt-key fingerprint 9DC858229FC7DD38854AE2D88D81803C0EBFCD88)" ]; then
-      echo "DANGER: added docker gpg key with incorrect fingerprint"
-      exit 1
-  fi
+    if [ -z "$(sudo apt-key fingerprint 9DC858229FC7DD38854AE2D88D81803C0EBFCD88)" ]; then
+        echo "DANGER: added docker gpg key with incorrect fingerprint"
+        exit 1
+    fi
 
-  sudo add-apt-repository \
-      "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-      $(lsb_release -cs) \
-      stable"
+    sudo add-apt-repository \
+        "deb [arch=amd64] $DOCKER_REPO \
+        $(lsb_release -cs) \
+        stable"
   fi
 
   sudo apt-get update
@@ -74,7 +85,6 @@ if [ "$REPLY" == 'y' ]; then
   system_sshd_edit_bool "PasswordAuthentication" "no"
   system_sshd_edit_bool "UsePAM" "no"
   systemctl restart sshd
-  service ssh restart
   echo "---> Locked down ssh."
 fi
 
