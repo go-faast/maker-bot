@@ -1,6 +1,6 @@
 {
   "name": "faast-maker-bot",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Faa.st Market Maker Bot ",
   "author": "Allan Hudgins <allan@bitaccess.co>",
   "private": true,
