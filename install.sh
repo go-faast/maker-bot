@@ -1,5 +1,11 @@
 #!/bin/bash
 
+set -e
+
+function lower {
+    # helper function
+    echo $1 | tr '[:upper:]' '[:lower:]'
+}
 function system_sshd_edit_bool {
   # system_sshd_edit_bool (param_name, "Yes"|"No")
   VALUE=`lower $2`
@@ -46,27 +52,39 @@ if [ -z $(which docker) ]; then
   echo "---> Installed docker-ce."
 fi
 
-echo "---> Configuring firewall (UFW)..."
-ufw default deny incoming
-ufw default allow outgoing
-ufw allow ssh
-ufw enable
-echo "---> Configured firewall."
+echo ""
+read -n 1 -p "> Apply recommended firewall config (ufw deny incoming)? [y/n]: " REPLY
+echo ""
 
-echo -n "---> Lock down ssh..."
-system_sshd_edit_bool "PasswordAuthentication" "no"
-system_sshd_edit_bool "UsePAM" "no"
-systemctl restart sshd
-service ssh restart
-echo "---> Locked down ssh."
+if [ "$REPLY" == 'y' ]; then
+  echo "---> Configuring firewall..."
+  ufw default deny incoming
+  ufw default allow outgoing
+  ufw allow ssh
+  ufw --force enable
+  echo "---> Configured firewall."
+fi
 
-echo -n "---> Downloading Faast maker bot docker image..."
+echo ""
+read -n 1 -p "> Apply recommended sshd config (disable password auth)? [y/n]: " REPLY
+echo ""
+
+if [ "$REPLY" == 'y' ]; then
+  echo "---> Locking down ssh..."
+  system_sshd_edit_bool "PasswordAuthentication" "no"
+  system_sshd_edit_bool "UsePAM" "no"
+  systemctl restart sshd
+  service ssh restart
+  echo "---> Locked down ssh."
+fi
+
+echo "---> Pulling Faast maker bot docker image..."
 docker pull faasthub/maker-bot:latest
-echo -n "---> Faast maker bot docker image download complete..."
+echo "---> Faast maker bot docker image pull complete."
 
 docker run --rm=true -i -t -v $PWD:/usr/local/faast/host faasthub/maker-bot:latest /usr/local/faast/bin/setup.sh
 
-EXISTING_CRONTAB="$(crontab -l 2>/dev/null)"
+EXISTING_CRONTAB="$(crontab -l 2>/dev/null; exit 0)"
 APPENDED_CRONTAB="30 * * * * \"$PWD/upgrade.sh\" >\"$PWD/upgrade.log\" 2>&1 #faast-maker-bot-auto-upgrade"
 if [ -z "$(echo \"$EXISTING_CRONTAB\" | grep faast-maker-bot-auto-upgrade)" ]; then
   echo -e "$EXISTING_CRONTAB\n$APPENDED_CRONTAB" | crontab -
@@ -74,3 +92,7 @@ if [ -z "$(echo \"$EXISTING_CRONTAB\" | grep faast-maker-bot-auto-upgrade)" ]; t
 fi
 
 ./start.sh
+
+echo "---> Maker bot started. Tailing logs"
+
+./logs.sh -f

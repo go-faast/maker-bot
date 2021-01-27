@@ -62,7 +62,7 @@ echo "Setup complete."
 
 mv $temp $settings
 
-cp "$bindir/host/*" "$bindir/../host"
+cp "$bindir/host"/* "$bindir/../host"
 echo "Copied external scripts to host."
 
 echo "Run ./start.sh to start your maker bot and connect to Faast."
