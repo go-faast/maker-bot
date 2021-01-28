@@ -3,15 +3,14 @@
 set -e
 
 function lower {
-    # helper function
-    echo $1 | tr '[:upper:]' '[:lower:]'
+  echo $1 | tr '[:upper:]' '[:lower:]'
 }
 function system_sshd_edit_bool {
   # system_sshd_edit_bool (param_name, "Yes"|"No")
   VALUE=`lower $2`
   if [ "$VALUE" == "yes" ] || [ "$VALUE" == "no" ]; then
-      sed -i "s/^#*\($1\).*/\1 $VALUE/" /etc/ssh/sshd_config
-      echo "sshd_config set $1=$VALUE"
+    sed -i "s/^#*\($1\).*/\1 $VALUE/" /etc/ssh/sshd_config
+    echo "sshd_config set $1=$VALUE"
   fi
 }
 
