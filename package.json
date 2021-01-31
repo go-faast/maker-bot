@@ -9,7 +9,7 @@
     "lint": "./node_modules/.bin/standard"
   },
   "dependencies": {
-    "@faast/coin-payments": "^4.0.0",
+    "@faast/coin-payments": "^4.0.2",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "json": "^9.0.6",
