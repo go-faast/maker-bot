@@ -9,5 +9,5 @@ This should be installed on a dedicated 24/7 server, not a personal machine. Spo
 Run the following command on your Ubuntu host to install the maker bot software. The installation script will prepare your system for secure operation and download the maker bot docker image. You'll be prompted to enter your faast credentials, exchange credentials, and generate a wallet.
 
 ```shell
-curl -o- https://raw.githubusercontent.com/go-faast/maker-bot/master/install.sh | bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/go-faast/maker-bot/master/install.sh)"
 ```

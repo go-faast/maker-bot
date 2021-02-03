@@ -63,10 +63,10 @@ if ! docker --version 2>/dev/null; then
 fi
 
 echo ""
-read -n 1 -p "> Apply recommended firewall config (ufw deny incoming)? [y/n]: " REPLY
+read -p "> Apply recommended firewall config (ufw deny incoming)? [y/n]: " REPLY
 echo ""
 
-if [ "$REPLY" == 'y' ]; then
+if [[ "$REPLY" == y* ]]; then
   echo "---> Configuring firewall..."
   ufw default deny incoming
   ufw default allow outgoing
@@ -76,10 +76,10 @@ if [ "$REPLY" == 'y' ]; then
 fi
 
 echo ""
-read -n 1 -p "> Apply recommended sshd config (disable password auth)? [y/n]: " REPLY
+read -p "> Apply recommended sshd config (disable password auth)? [y/n]: " REPLY
 echo ""
 
-if [ "$REPLY" == 'y' ]; then
+if [[ "$REPLY" == y* ]]; then
   echo "---> Locking down ssh..."
   system_sshd_edit_bool "PasswordAuthentication" "no"
   system_sshd_edit_bool "UsePAM" "no"
